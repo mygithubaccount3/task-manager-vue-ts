@@ -1,12 +1,26 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <router-view @authenticated='setAuthenticated' @logout='logout'/>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component({ name: 'App' })
+export default class App extends Vue {
+  authenticated = false
+
+  setAuthenticated (status: boolean) {
+    this.authenticated = status
+  }
+
+  logout () {
+    localStorage.removeItem('email')
+    this.authenticated = false
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
