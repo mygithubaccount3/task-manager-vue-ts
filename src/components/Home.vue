@@ -35,7 +35,6 @@
           :id="card.id"
           :title="card.title"
           :text="card.text"
-          @removeCard="removeCard"
           @openEditingDrawer="openEditingDrawer"
         />
       </li>
@@ -102,11 +101,6 @@ export default class Home extends Vue {
       this.$store.dispatch('updateExistingCard', { updatedCard: { id: uuid.v4(), title: this.titleInput, text: this.descriptionInput }, targetId: this.id })
     }
     this.closeDrawer()
-  }
-
-  removeCard (id: string) {
-    // place to Card.vue
-    this.$store.dispatch('removeCard', id)
   }
 }
 </script>
