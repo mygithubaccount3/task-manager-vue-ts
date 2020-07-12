@@ -49,33 +49,23 @@ import { Vue } from 'vue-property-decorator'
 import { uuid } from 'vue-uuid'
 import Card from './Card.vue'
 
-interface CardInterface {
-    id: string;
-    title: string;
-    text: string;
-}
-
 @Component({ name: 'Home', components: { Card } })
 export default class Home extends Vue {
   email = localStorage.getItem('email');
-  cards: CardInterface[] = [];
   descriptionInput = '';
   titleInput = '';
   creating = true;
   id = '';
 
+  get cards () {
+    return this.$store.state.cards
+  }
+
   created () {
     if (!this.email) {
       this.$router.replace('login')
     } else {
-      const remoteCards = localStorage.getItem('card-items')
-      const parsedRemoteCards =
-        remoteCards === null ? null : JSON.parse(remoteCards)
-      this.cards.splice(0)
-      /* const context = this */
-      if (parsedRemoteCards) {
-        parsedRemoteCards.forEach((el: CardInterface) => this.cards.push(el))
-      }
+      this.$store.dispatch('fetchAllCards')
     }
   }
 
@@ -107,28 +97,16 @@ export default class Home extends Vue {
 
   submitForm () {
     if (this.creating) {
-      this.cards.push({
-        id: uuid.v4(),
-        title: this.titleInput,
-        text: this.descriptionInput
-      })
-      localStorage.setItem('card-items', JSON.stringify(this.cards))
+      this.$store.dispatch('addNewCard', { id: uuid.v4(), title: this.titleInput, text: this.descriptionInput })
     } else {
-      const elIndex = this.cards.findIndex(el => el.id === this.id)
-      this.cards.splice(elIndex, 1, {
-        id: uuid.v4(),
-        title: this.titleInput,
-        text: this.descriptionInput
-      })
-      localStorage.setItem('card-items', JSON.stringify(this.cards))
+      this.$store.dispatch('updateExistingCard', { updatedCard: { id: uuid.v4(), title: this.titleInput, text: this.descriptionInput }, targetId: this.id })
     }
     this.closeDrawer()
   }
 
   removeCard (id: string) {
-    const index = this.cards.findIndex(el => el.id === id)
-    this.cards.splice(index, 1)
-    localStorage.setItem('card-items', JSON.stringify(this.cards))
+    // place to Card.vue
+    this.$store.dispatch('removeCard', id)
   }
 }
 </script>
