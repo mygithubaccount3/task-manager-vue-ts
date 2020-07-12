@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card__header">
             <font-awesome-icon icon="pen" size="2x" @click="editCard" :style="{marginRight: '10px'}"/>
-            <font-awesome-icon icon="trash" size="2x" @click="deleteCard"/>
+            <font-awesome-icon icon="trash" size="2x" @click="removeCard(id)"/>
         </div>
         <div class="card__content">
             <h1 class="card__title">{{this.title}}</h1>
@@ -20,9 +20,9 @@ export default class Card extends Vue {
   @Prop(String) private title!: string;
   @Prop(String) private text!: string;
 
-  deleteCard () {
+  removeCard (id: string) {
     if (confirm('Delete an item?')) {
-      this.$emit('removeCard', this.id)
+      this.$store.dispatch('removeCard', id)
     }
   }
 
