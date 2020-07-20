@@ -5,7 +5,7 @@
       @closeDrawer="closeDrawer"
       :showDrawer="showDrawer"
       :drawerForCreatingColumn="drawerForCreatingColumn"
-      :card="{id, title, text, imgURL, parentColumn}"
+      :card="card"
     />
     <Header :email="email" @openDrawer="openDrawer"/>
     <div class="cardListsWrapper">
@@ -24,12 +24,8 @@ import CardList from '../components/CardList.vue'
 
 @Component({ name: 'Home', components: { Drawer, Header, CardList } })
 export default class Home extends Vue {
+  card: CardInterface = { id: '', title: '', text: '', imgURL: '', parentColumn: '' }
   email: string | null = '';
-  text = '';
-  title = '';
-  id = '';
-  imgURL = '';
-  parentColumn = '';
   showDrawer = false;
   drawerForCreatingColumn = false;
 
@@ -51,7 +47,6 @@ export default class Home extends Vue {
     if (!this.email) {
       this.$router.replace('login')
     }
-
     this.$store.dispatch('fetchAllCards')
   }
 
@@ -61,21 +56,13 @@ export default class Home extends Vue {
   }
 
   openEditingDrawer (card: CardInterface) {
-    this.id = card.id
-    this.title = card.title
-    this.text = card.text
-    this.imgURL = card.imgURL
-    this.parentColumn = card.parentColumn
+    this.card = card
     this.openDrawer(false)
   }
 
   closeDrawer () {
     this.showDrawer = false
-    this.id = ''
-    this.title = ''
-    this.text = ''
-    this.imgURL = ''
-    this.parentColumn = ''
+    this.card = { id: '', title: '', text: '', imgURL: '', parentColumn: '' }
   }
 }
 </script>

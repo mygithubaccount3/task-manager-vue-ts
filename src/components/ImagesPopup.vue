@@ -20,10 +20,11 @@ export default class ImagesPopup extends Vue {
   @Ref() readonly spinner!: HTMLDivElement;
 
   imagesURLs: Array<string> = []
+  controller = new AbortController()
 
   mounted () {
     this.spinner.className = 'show'
-    fetch('https://api.magicthegathering.io/v1/cards')
+    fetch('https://api.magicthegathering.io/v1/cards', { signal: this.controller.signal })
       .then(res => res.json())
       .then(res => {
         res.cards.forEach((el: any) => {
@@ -33,6 +34,7 @@ export default class ImagesPopup extends Vue {
         })
         this.spinner.className = ''
       })
+      .catch(error => this.$store.commit('showError', `Error occured: ${error.message}`))
   }
 
   selectImage (e: Event) {
@@ -43,6 +45,7 @@ export default class ImagesPopup extends Vue {
   }
 
   closePopup () {
+    this.controller.abort()
     this.$emit('closePopup')
   }
 }
