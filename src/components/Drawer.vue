@@ -73,7 +73,7 @@ export default class Drawer extends Vue {
           id: uuid(),
           title: this.titleRef.value,
           text: this.textRef.value,
-          imgURL: this.imgRef.src,
+          imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
         })
       } else {
@@ -93,7 +93,7 @@ export default class Drawer extends Vue {
           id: this.card.id,
           title: this.titleRef.value,
           text: this.textRef.value,
-          imgURL: this.imgRef.src,
+          imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
         })
       } else {
