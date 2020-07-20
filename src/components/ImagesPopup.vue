@@ -3,7 +3,7 @@
     <div class="modal-mask">
       <div class="modal-container">
         <div id="spinner" ref="spinner"></div>
-        <img v-for="el in arr" :src="el" :alt="el" :key="el" class="img" @click="selectImage">
+        <img v-for="el in imagesURLs" :src="el" :alt="el" :key="el" class="img" @click="selectImage">
         <button class="modal-default-button" @click="closePopup">Close</button>
       </div>
     </div>
