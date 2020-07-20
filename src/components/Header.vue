@@ -1,8 +1,8 @@
 <template>
   <div class="header">
-    <AlertModal v-if="alert">{{this.alert}}</AlertModal>
     <span class="header__userEmail">&lt;{{this.email}}&gt;</span>
-    <button @click="logout" class="header__btnLogout">LogOut</button>
+    <button @click="createList" class="header__btn">Create List</button>
+    <button @click="logout" class="header__btn">LogOut</button>
   </div>
 </template>
 
@@ -10,14 +10,13 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
-import AlertModal from './AlertModal.vue'
 
-@Component({ components: { AlertModal } })
+@Component
 export default class Header extends Vue {
   @Prop() private email!: string;
 
-  get alert () {
-    return this.$store.state.alert
+  createList () {
+    this.$emit('openDrawer', true)
   }
 
   logout () {
@@ -48,7 +47,7 @@ export default class Header extends Vue {
     margin-left: 10px;
   }
 
-  &__btnLogout {
+  &__btn {
     background-color: white;
     border: 1px solid #000000;
     border-radius: 5px;

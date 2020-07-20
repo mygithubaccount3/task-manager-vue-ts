@@ -51,7 +51,8 @@ function saveCards (destination: string, cards: CardInterface[], context: Action
 export default new Vuex.Store({
   state: {
     cards: Array<CardInterface>(),
-    alert: ''
+    alert: '',
+    columns: Array<string>()
   },
   mutations: {
     clear (state) {
@@ -73,6 +74,12 @@ export default new Vuex.Store({
     },
     showError (state, payload) {
       state.alert = payload
+    },
+    createColumn (state, payload) {
+      state.columns.push(payload.title)
+    },
+    pushColumn (state, payload) {
+      state.columns.splice(0, state.columns.length, ...payload)
     }
   },
   actions: {
@@ -83,6 +90,10 @@ export default new Vuex.Store({
       context.commit('clear')
       if (parsedRemoteCards) {
         context.commit('saveCardsFromLocalStorage', parsedRemoteCards)
+      }
+      const columns = localStorage.getItem('columns') ? JSON.parse(localStorage.getItem('columns')!) : null
+      if (columns) {
+        context.commit('pushColumn', columns)
       }
     },
     addNewCard (context, payload) {
@@ -96,6 +107,10 @@ export default new Vuex.Store({
     removeCard (context, payload) {
       context.commit('removeCard', payload)
       saveCards('localStorage', context.state.cards, context)
+    },
+    createColumn (context, payload) {
+      context.commit('createColumn', payload)
+      localStorage.setItem('columns', JSON.stringify(context.state.columns))
     }
   },
   modules: {

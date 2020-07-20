@@ -1,14 +1,20 @@
 <template>
   <div id="app">
+    <AlertModal v-if="alert">{{alert}}</AlertModal>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import AlertModal from './components/AlertModal.vue'
 
-@Component({ name: 'App' })
-export default class App extends Vue {}
+@Component({ name: 'App', components: { AlertModal } })
+export default class App extends Vue {
+  get alert () {
+    return this.$store.state.alert
+  }
+}
 </script>
 
 <style lang="scss">

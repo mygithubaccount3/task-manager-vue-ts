@@ -1,6 +1,5 @@
 <template>
   <div class="loginFormWrapper">
-    <AlertModal v-if="alert">{{this.alert}}</AlertModal>
     <h1>Login Page</h1>
     <form @submit.prevent="logIn" class="loginForm">
         <label for="emailInput" class="loginForm__label">email:</label>
@@ -14,16 +13,11 @@
 <script lang="ts">
 import { Vue, Watch } from 'vue-property-decorator'
 import Component from 'vue-class-component'
-import AlertModal from '../components/AlertModal.vue'
 
-@Component({ components: { AlertModal } })
+@Component
 export default class Login extends Vue {
   email = ''
   error = ''
-
-  get alert () {
-    return this.$store.state.alert
-  }
 
   @Watch('email')
   function (val: string) {

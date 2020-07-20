@@ -1,54 +1,40 @@
 <template>
-  <div>
-    <AlertModal v-if="alert">{{this.alert}}</AlertModal>
+  <li class="cardWrapper">
     <RemovalModal
           v-if="showRemovalModal"
           @toggleModal="toggleRemovalModal"
           @removeCard="removeCard"
           :id="itemIDToRemove"
         />
-    <ul class="cardsWrapper">
-      <li class="card" v-for="card in cards" :key="card.id">
+      <div class="card">
         <div class="card__header">
           <font-awesome-icon
             icon="pen"
             size="2x"
-            @click="editCard({ id: card.id, title: card.title, text: card.text })"
+            @click="editCard({ id: card.id, title: card.title, text: card.text, imgURL: card.imgURL, parentColumn: card.parentColumn })"
             class="card__penIcon"
           />
           <font-awesome-icon icon="trash" size="2x" @click="toggleRemovalModal(card.id)" />
         </div>
         <div class="card__content">
+          <img class="card__img" :src="card.imgURL" :alt="card.title">
           <h1 class="card__title">{{card.title}}</h1>
           <p class="card__description">{{card.text}}</p>
         </div>
-      </li>
-    </ul>
-  </div>
+      </div>
+  </li>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { CardInterface } from '../interfaces/Card'
-import AlertModal from './AlertModal.vue'
 import RemovalModal from './RemovalModal.vue'
 
-@Component({ components: { AlertModal, RemovalModal } })
+@Component({ components: { RemovalModal } })
 export default class Cards extends Vue {
+  @Prop() private card?: CardInterface
   showRemovalModal = false;
   itemIDToRemove = ''
-
-  get alert () {
-    return this.$store.state.alert
-  }
-
-  get cards () {
-    return this.$store.state.cards
-  }
-
-  created () {
-    this.$store.dispatch('fetchAllCards')
-  }
 
   toggleRemovalModal (id: string) {
     this.showRemovalModal = !this.showRemovalModal
@@ -66,6 +52,15 @@ export default class Cards extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import "../mixins/mixins.scss";
+
+.cardWrapper {
+    background-color: #d0c0ff;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
 .cardsWrapper {
   display: flex;
   flex-wrap: wrap;
@@ -77,25 +72,23 @@ export default class Cards extends Vue {
 }
 
 .card {
-  border: 1px solid black;
-  padding: 10px;
+  box-sizing: border-box;
   display: inline-block;
   margin-top: 10px;
   margin-bottom: 10px;
-  min-width: 200px;
-  width: 30%;
+  width: 65%;
 
-  @media screen and (max-width: 767px) {
-    width: 46%;
+  @include respond-to(tablet) {
+    width: 80%;
   }
 
-  @media screen and (max-width: 555px) {
+  @include respond-to(smallScreen) {
     width: 100%;
   }
 
   &__header {
     border-bottom: 1px solid black;
-    padding-bottom: 10px;
+    padding: 10px;
     text-align: right;
   }
 
@@ -103,8 +96,19 @@ export default class Cards extends Vue {
     margin-right: 10px;
   }
 
+  &__content {
+    padding: 10px;
+  }
+
+  &__img {
+    max-width: 223px;
+    height: auto;
+    width: 60%;
+  }
+
   &__title,
   &__description {
+    font-size: 15px;
     text-align: left;
     word-break: break-all;
   }

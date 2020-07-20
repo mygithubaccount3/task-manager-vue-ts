@@ -3,23 +3,34 @@
     <button class="btnOpenDrawer" @click="openDrawer">
       <font-awesome-icon icon="plus-circle" size="3x" />
     </button>
+    <Popup v-if="showPopup" @closePopup="togglePopup" @saveImage="saveImage"/>
     <div class="drawer" v-if="showDrawer">
       <div class="drawer__overlay" @click="closeDrawer"></div>
       <form @submit.prevent="submitForm" class="drawer__taskForm">
         <label class="drawer__fieldLabel">
           Title:
-          <input type="text" :value="this.title" class="drawer__titleInput" ref="titleRef" />
+          <input type="text" :value="card.title" class="drawer__titleInput" ref="titleRef" :disabled="!columns.length && !drawerForCreatingColumn"/>
         </label>
-        <label class="drawer__fieldLabel">
+        <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
           Description:
           <textarea
-            :value="this.text"
-            rows="10"
+            :value="card.text"
+            rows="7"
             class="drawer__descriptionInput"
             ref="textRef"
+            :disabled="!columns.length"
           />
         </label>
-        <input type="submit" value="submit" class="drawer__btnSubmit" />
+        <img :src="card.imgURL" :alt="card.title" class="drawer__img" ref="imgRef">
+        <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
+          Column:
+          <select ref="selectRef" :value="card.parentColumn" :disabled="!columns.length">
+            <option v-for="column in columns" :key="column">{{column}}</option>
+          </select>
+        </label>
+        <p class="drawer__error" v-if="!columns.length && !drawerForCreatingColumn">There are no columns yet</p>
+        <button class="drawer__btnSubmit" v-if="!drawerForCreatingColumn" @click.prevent="togglePopup" :disabled="!columns.length">Select image</button>
+        <input type="submit" value="submit" class="drawer__btnSubmit" :disabled="!columns.length && !drawerForCreatingColumn"/>
       </form>
       <font-awesome-icon icon="times" size="2x" @click="closeDrawer" class="drawer__closeIcon" />
     </div>
@@ -31,40 +42,78 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop, Ref } from 'vue-property-decorator'
 import { uuid } from 'uuidv4'
+import { CardInterface } from '../interfaces/Card'
+import Popup from './ImagesPopup.vue'
 
-@Component
+@Component({ components: { Popup } })
 export default class Drawer extends Vue {
   @Prop({ default: false }) private showDrawer?: boolean;
-  @Prop({ default: '' }) private id?: string;
-  @Prop({ default: '' }) private title?: string;
-  @Prop({ default: '' }) private text?: string;
+  @Prop({ default: false }) private drawerForCreatingColumn?: boolean;
+  @Prop() private card!: CardInterface
 
   @Ref() readonly titleRef!: HTMLInputElement;
   @Ref() readonly textRef!: HTMLTextAreaElement;
+  @Ref() readonly selectRef!: HTMLSelectElement;
+  @Ref() readonly imgRef!: HTMLImageElement;
+
+  showPopup = false
+
+  get columns () {
+    return this.$store.state.columns
+  }
+
+  togglePopup () {
+    this.showPopup ? this.showPopup = false : this.showPopup = true
+  }
 
   submitForm () {
-    if (!this.id) {
-      this.$store.dispatch('addNewCard', {
-        id: uuid(),
-        title: this.titleRef.value,
-        text: this.textRef.value
-      })
+    if (!this.card.id && !this.drawerForCreatingColumn) {
+      if (this.titleRef.value && this.textRef.value && this.imgRef.src && this.selectRef.value) {
+        this.$store.dispatch('addNewCard', {
+          id: uuid(),
+          title: this.titleRef.value,
+          text: this.textRef.value,
+          imgURL: this.imgRef.src,
+          parentColumn: this.selectRef.value
+        })
+      } else {
+        this.$store.commit('showError', 'One or more fields were not filled')
+      }
+    } else if (this.drawerForCreatingColumn) {
+      if (this.titleRef.value) {
+        this.$store.dispatch('createColumn', {
+          title: this.titleRef.value
+        })
+      } else {
+        this.$store.commit('showError', 'Provide column title')
+      }
     } else {
-      this.$store.dispatch('updateExistingCard', {
-        id: this.id,
-        title: this.titleRef.value,
-        text: this.textRef.value
-      })
+      if (this.titleRef.value && this.textRef.value && this.imgRef.src && this.selectRef.value) {
+        this.$store.dispatch('updateExistingCard', {
+          id: this.card.id,
+          title: this.titleRef.value,
+          text: this.textRef.value,
+          imgURL: this.imgRef.src,
+          parentColumn: this.selectRef.value
+        })
+      } else {
+        this.$store.commit('showError', 'One or more fields were not filled')
+      }
     }
     this.closeDrawer()
   }
 
   openDrawer () {
-    this.$emit('openDrawer')
+    this.$emit('openDrawer', false)
   }
 
   closeDrawer () {
     this.$emit('closeDrawer')
+  }
+
+  saveImage (img: string) {
+    this.imgRef.src = img
+    this.showPopup = false
   }
 }
 </script>
@@ -131,6 +180,14 @@ $default-spacing: 30px;
     width: 95%;
   }
 
+  &__img {
+    width: 50%;
+  }
+
+  &__error {
+    color: red
+  }
+
   &__btnSubmit {
     border: 1px solid black;
     border-radius: 5px;
@@ -142,6 +199,7 @@ $default-spacing: 30px;
     position: absolute;
     bottom: 0;
     left: calc(50% - 11px);
+    z-index: 1000;
   }
 }
 

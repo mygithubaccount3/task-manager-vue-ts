@@ -2,6 +2,7 @@
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-container">
+        <span class="emodji">&#x1F631;</span>
         <slot></slot>
         <button class="modal-default-button" @click="closeAlertModal">OK</button>
       </div>
@@ -22,6 +23,9 @@ export default class AlertModal extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.emodji {
+  font-size: 80px;
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -34,14 +38,16 @@ export default class AlertModal extends Vue {
 }
 
 .modal-container {
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  height: 50px;
+  height: auto;
   width: 300px;
   margin: 0px auto;
   padding: 20px 30px;
+  padding-top: 0;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -61,6 +67,7 @@ export default class AlertModal extends Vue {
 .modal-default-button {
   align-self: flex-end;
   float: right;
+  margin-top: 15px;
   width: 60px;
 }
 

@@ -1,37 +1,40 @@
 <template>
   <div class="contentWrapper">
-    <AlertModal v-if="alert">{{this.alert}}</AlertModal>
     <Drawer
       @openDrawer="openDrawer"
       @closeDrawer="closeDrawer"
       :showDrawer="showDrawer"
-      :id="id"
-      :title="titleInput"
-      :text="descriptionInput"
+      :drawerForCreatingColumn="drawerForCreatingColumn"
+      :card="{id, title, text, imgURL, parentColumn}"
     />
-    <Header :email="email" />
-    <Cards @openEditingDrawer="openEditingDrawer" />
+    <Header :email="email" @openDrawer="openDrawer"/>
+    <div class="cardListsWrapper">
+      <CardList v-for="columnTitle in columns" :columnTitle="columnTitle" :key="columnTitle" @openEditingDrawer="openEditingDrawer"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { CardInterface } from '../interfaces/Card'
 import Drawer from '../components/Drawer.vue'
 import Header from '../components/Header.vue'
-import Cards from '../components/Cards.vue'
-import AlertModal from '../components/AlertModal.vue'
+import CardList from '../components/CardList.vue'
 
-@Component({ name: 'Home', components: { Drawer, Header, Cards, AlertModal } })
+@Component({ name: 'Home', components: { Drawer, Header, CardList } })
 export default class Home extends Vue {
   email: string | null = '';
-  descriptionInput = '';
-  titleInput = '';
+  text = '';
+  title = '';
   id = '';
+  imgURL = '';
+  parentColumn = '';
   showDrawer = false;
+  drawerForCreatingColumn = false;
 
-  get alert () {
-    return this.$store.state.alert
+  get columns () {
+    return this.$store.state.columns
   }
 
   created () {
@@ -48,24 +51,31 @@ export default class Home extends Vue {
     if (!this.email) {
       this.$router.replace('login')
     }
+
+    this.$store.dispatch('fetchAllCards')
   }
 
-  openDrawer () {
+  openDrawer (drawerForCreatingColumn: boolean) {
     this.showDrawer = true
+    this.drawerForCreatingColumn = drawerForCreatingColumn
   }
 
-  openEditingDrawer ({ id, title, text }: { id: string; title: string; text: string }) {
-    this.id = id
-    this.titleInput = title
-    this.descriptionInput = text
-    this.openDrawer()
+  openEditingDrawer (card: CardInterface) {
+    this.id = card.id
+    this.title = card.title
+    this.text = card.text
+    this.imgURL = card.imgURL
+    this.parentColumn = card.parentColumn
+    this.openDrawer(false)
   }
 
   closeDrawer () {
     this.showDrawer = false
     this.id = ''
-    this.titleInput = ''
-    this.descriptionInput = ''
+    this.title = ''
+    this.text = ''
+    this.imgURL = ''
+    this.parentColumn = ''
   }
 }
 </script>
@@ -74,5 +84,13 @@ export default class Home extends Vue {
 .contentWrapper {
   min-height: 150px;
   position: relative;
+}
+
+.cardListsWrapper {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin-top: 20px;
 }
 </style>
