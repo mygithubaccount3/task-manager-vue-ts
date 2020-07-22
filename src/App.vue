@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <AlertModal v-if="alert">{{alert}}</AlertModal>
+    <AlertModal v-show="alert">{{alert}}</AlertModal>
     <router-view />
   </div>
 </template>

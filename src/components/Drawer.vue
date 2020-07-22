@@ -4,36 +4,38 @@
       <font-awesome-icon icon="plus-circle" size="3x" />
     </button>
     <Popup v-if="showPopup" @closePopup="togglePopup" @saveImage="saveImage"/>
-    <div class="drawer" v-if="showDrawer">
-      <div class="drawer__overlay" @click="closeDrawer"></div>
-      <form @submit.prevent="submitForm" class="drawer__taskForm">
-        <label class="drawer__fieldLabel">
-          Title:
-          <input type="text" :value="card.title" class="drawer__titleInput" ref="titleRef" :disabled="!columns.length && !drawerForCreatingColumn"/>
-        </label>
-        <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
-          Description:
-          <textarea
-            :value="card.text"
-            rows="7"
-            class="drawer__descriptionInput"
-            ref="textRef"
-            :disabled="!columns.length"
-          />
-        </label>
-        <img :src="card.imgURL" :alt="card.title" class="drawer__img" ref="imgRef">
-        <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
-          Column:
-          <select ref="selectRef" :value="card.parentColumn" :disabled="!columns.length">
-            <option v-for="column in columns" :key="column">{{column}}</option>
-          </select>
-        </label>
-        <p class="drawer__error" v-if="!columns.length && !drawerForCreatingColumn">There are no columns yet</p>
-        <button class="drawer__btnSubmit" v-if="!drawerForCreatingColumn" @click.prevent="togglePopup" :disabled="!columns.length">Select image</button>
-        <input type="submit" value="submit" class="drawer__btnSubmit" :disabled="!columns.length && !drawerForCreatingColumn"/>
-      </form>
-      <font-awesome-icon icon="times" size="2x" @click="closeDrawer" class="drawer__closeIcon" />
-    </div>
+    <transition name="slide">
+      <div class="drawer" v-if="showDrawer">
+        <div class="drawer__overlay" @click="closeDrawer"></div>
+        <form @submit.prevent="submitForm" class="drawer__taskForm">
+          <label class="drawer__fieldLabel">
+            Title:
+            <input type="text" :value="card.title" class="drawer__titleInput" ref="titleRef" :disabled="!columns.length && !drawerForCreatingColumn"/>
+          </label>
+          <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
+            Description:
+            <textarea
+              :value="card.text"
+              rows="7"
+              class="drawer__descriptionInput"
+              ref="textRef"
+              :disabled="!columns.length"
+            />
+          </label>
+          <img :src="card.imgURL" :alt="card.title" class="drawer__img" ref="imgRef">
+          <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
+            Column:
+            <select ref="selectRef" :value="card.parentColumn" :disabled="!columns.length">
+              <option v-for="column in columns" :key="column">{{column}}</option>
+            </select>
+          </label>
+          <p class="drawer__error" v-if="!columns.length && !drawerForCreatingColumn">There are no columns yet</p>
+          <button class="drawer__btnSubmit" v-if="!drawerForCreatingColumn" @click.prevent="togglePopup" :disabled="!columns.length">Select image</button>
+          <input type="submit" value="submit" class="drawer__btnSubmit" :disabled="!columns.length && !drawerForCreatingColumn"/>
+        </form>
+        <font-awesome-icon icon="times" size="2x" @click="closeDrawer" class="drawer__closeIcon" />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -140,6 +142,7 @@ $default-spacing: 30px;
   bottom: 0;
   box-shadow: rgba(0, 0, 0, 0.3) 2px 0 4px;
   left: 0;
+  transition: transform 0.3s ease;
 
   &__overlay {
     display: block;
@@ -203,6 +206,19 @@ $default-spacing: 30px;
     left: calc(50% - 11px);
     z-index: 1000;
   }
+}
+
+.slide-enter {
+  transform: translateX(-120%);
+}
+
+.slide-leave-active {
+  transform: translateX(-120%);
+}
+
+.slide-enter .slide-container,
+.slide-leave-active .slide-container {
+  transform: translateX(100%);
 }
 
 .btnOpenDrawer {
