@@ -69,13 +69,14 @@ export default class Drawer extends Vue {
   submitForm () {
     if (!this.card.id && !this.drawerForCreatingColumn) {
       if (this.titleRef.value && this.textRef.value && this.imgRef.src && this.selectRef.value) {
-        this.$store.dispatch('addNewCard', {
+        const card = {
           id: uuid(),
           title: this.titleRef.value,
           text: this.textRef.value,
           imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
-        })
+        }
+        this.$store.dispatch('addNewCard', card)
       } else {
         this.$store.commit('showError', 'One or more fields were not filled')
       }
@@ -89,13 +90,14 @@ export default class Drawer extends Vue {
       }
     } else {
       if (this.titleRef.value && this.textRef.value && this.imgRef.src && this.selectRef.value) {
-        this.$store.dispatch('updateExistingCard', {
+        const card = {
           id: this.card.id,
           title: this.titleRef.value,
           text: this.textRef.value,
           imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
-        })
+        }
+        this.$store.dispatch('updateExistingCard', { card, futureIndex: null })
       } else {
         this.$store.commit('showError', 'One or more fields were not filled')
       }

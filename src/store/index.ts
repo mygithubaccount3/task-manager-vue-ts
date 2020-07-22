@@ -65,8 +65,13 @@ export default new Vuex.Store({
       state.cards.push(payload)
     },
     updateExistingCard (state, payload) {
-      const elIndex = state.cards.findIndex((el: CardInterface) => el.id === payload.id)
-      state.cards.splice(elIndex, 1, payload)
+      const elIndex = state.cards.findIndex((el: CardInterface) => el.id === payload.card.id)
+      if (payload.futureIndex !== null) {
+        state.cards.splice(elIndex, 1)
+        state.cards.splice(payload.futureIndex, 0, payload.card)
+      } else {
+        state.cards.splice(elIndex, 1, payload.card)
+      }
     },
     removeCard (state, payload) {
       const index = state.cards.findIndex((el: CardInterface) => el.id === payload)
