@@ -10,9 +10,13 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
+import { Mutation } from 'vuex-class'
+import { MutationMethod } from 'vuex'
 
 @Component
 export default class Header extends Vue {
+  @Mutation showError!: MutationMethod
+
   @Prop() private email!: string;
 
   createList () {
@@ -25,10 +29,10 @@ export default class Header extends Vue {
         localStorage.removeItem('email')
         this.$router.replace('login')
       } catch (e) {
-        this.$store.commit('showError', `Error occured: ${e.message}`)
+        this.showError(`Error occured: ${e.message}`)
       }
     } else {
-      this.$store.commit('showError', 'Your browser does not support localStorage')
+      this.showError('Your browser does not support localStorage')
     }
   }
 }

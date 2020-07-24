@@ -17,6 +17,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { MutationMethod, ActionMethod } from 'vuex'
+import { Action, Mutation } from 'vuex-class'
 import { CardInterface } from '../interfaces/Card'
 import Drawer from '../components/Drawer.vue'
 import Header from '../components/Header.vue'
@@ -24,6 +26,10 @@ import CardList from '../components/CardList.vue'
 
 @Component({ name: 'Home', components: { Drawer, Header, CardList } })
 export default class Home extends Vue {
+  @Mutation showError!: MutationMethod
+
+  @Action fetchAllCards!: ActionMethod
+
   card: CardInterface = { id: '', title: '', text: '', imgURL: '', parentColumn: '' }
   email: string | null = '';
   showDrawer = false;
@@ -38,16 +44,16 @@ export default class Home extends Vue {
       try {
         this.email = localStorage.getItem('email')
       } catch (e) {
-        this.$store.commit('showError', `Error occured: ${e.message}`)
+        this.showError(`Error occured: ${e.message}`)
       }
     } else {
-      this.$store.commit('showError', 'Your browser does not support localStorage. The app will not work')
+      this.showError('Your browser does not support localStorage. The app will not work')
     }
 
     if (!this.email) {
       this.$router.replace('login')
     }
-    this.$store.dispatch('fetchAllCards')
+    this.fetchAllCards()
   }
 
   openDrawer (drawerForCreatingColumn: boolean) {

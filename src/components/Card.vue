@@ -3,7 +3,7 @@
     <RemovalModal
           v-if="showRemovalModal"
           @toggleModal="toggleRemovalModal"
-          @removeCard="removeCard"
+          @removeCard="deleteCard"
           :id="itemIDToRemove"
         />
       <div class="card">
@@ -27,12 +27,17 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
+import { ActionMethod } from 'vuex'
+import { Action } from 'vuex-class'
 import { CardInterface } from '../interfaces/Card'
 import RemovalModal from './RemovalModal.vue'
 
 @Component({ components: { RemovalModal } })
 export default class Cards extends Vue {
+  @Action removeCard!: ActionMethod
+
   @Prop() private card?: CardInterface
+
   showRemovalModal = false;
   itemIDToRemove = ''
 
@@ -41,8 +46,8 @@ export default class Cards extends Vue {
     this.showRemovalModal ? this.itemIDToRemove = id : this.itemIDToRemove = ''
   }
 
-  removeCard (id: string) {
-    this.$store.dispatch('removeCard', id)
+  deleteCard (id: string) {
+    this.removeCard(id)
   }
 
   editCard (card: CardInterface) {

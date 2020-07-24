@@ -11,11 +11,15 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { Mutation } from 'vuex-class'
+import { MutationMethod } from 'vuex'
 
 @Component
 export default class AlertModal extends Vue {
+  @Mutation showError!: MutationMethod
+
   closeAlertModal () {
-    this.$store.commit('showError', '')
+    this.showError('')
   }
 }
 </script>

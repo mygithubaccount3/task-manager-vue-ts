@@ -13,9 +13,13 @@
 <script lang="ts">
 import { Vue, Watch } from 'vue-property-decorator'
 import Component from 'vue-class-component'
+import { Mutation } from 'vuex-class'
+import { MutationMethod } from 'vuex'
 
 @Component
 export default class Login extends Vue {
+  @Mutation showError!: MutationMethod
+
   email = ''
   error = ''
 
@@ -36,10 +40,10 @@ export default class Login extends Vue {
         localStorage.setItem('email', this.email)
         this.$router.replace({ name: 'Home', params: { email: this.email } })
       } catch (e) {
-        this.$store.commit('showError', `Error occured: ${e.message}`)
+        this.showError(`Error occured: ${e.message}`)
       }
     } else {
-      this.$store.commit('showError', 'Your browser does not support localStorage')
+      this.showError('Your browser does not support localStorage')
     }
   }
 }

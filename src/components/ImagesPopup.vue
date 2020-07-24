@@ -14,9 +14,13 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Ref } from 'vue-property-decorator'
+import { Mutation } from 'vuex-class'
+import { MutationMethod } from 'vuex'
 
 @Component
 export default class ImagesPopup extends Vue {
+  @Mutation showError!: MutationMethod
+
   @Ref() readonly spinner!: HTMLDivElement;
 
   imagesURLs: Array<string> = []
@@ -34,7 +38,7 @@ export default class ImagesPopup extends Vue {
         })
         this.spinner.className = ''
       })
-      .catch(error => this.$store.commit('showError', `Error occured: ${error.message}`))
+      .catch(error => this.showError(`Error occured: ${error.message}`))
   }
 
   selectImage (e: Event) {

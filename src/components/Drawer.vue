@@ -44,11 +44,19 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop, Ref } from 'vue-property-decorator'
 import { uuid } from 'uuidv4'
+import { MutationMethod, ActionMethod } from 'vuex'
+import { Mutation, Action } from 'vuex-class'
 import { CardInterface } from '../interfaces/Card'
 import Popup from './ImagesPopup.vue'
 
 @Component({ components: { Popup } })
 export default class Drawer extends Vue {
+  @Mutation showError!: MutationMethod
+
+  @Action addNewCard!: ActionMethod
+  @Action createColumn!: ActionMethod
+  @Action updateExistingCard!: ActionMethod
+
   @Prop({ default: false }) private showDrawer?: boolean;
   @Prop({ default: false }) private drawerForCreatingColumn?: boolean;
   @Prop() private card!: CardInterface
@@ -78,17 +86,17 @@ export default class Drawer extends Vue {
           imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
         }
-        this.$store.dispatch('addNewCard', card)
+        this.addNewCard(card)
       } else {
-        this.$store.commit('showError', 'One or more fields were not filled')
+        this.showError('One or more fields were not filled')
       }
     } else if (this.drawerForCreatingColumn) {
       if (this.titleRef.value) {
-        this.$store.dispatch('createColumn', {
+        this.createColumn({
           title: this.titleRef.value
         })
       } else {
-        this.$store.commit('showError', 'Provide column title')
+        this.showError('Provide column title')
       }
     } else {
       if (this.titleRef.value && this.textRef.value && this.imgRef.src && this.selectRef.value) {
@@ -99,9 +107,9 @@ export default class Drawer extends Vue {
           imgURL: this.imgRef.src, // when url is not provided show nothing
           parentColumn: this.selectRef.value
         }
-        this.$store.dispatch('updateExistingCard', { card, futureIndex: null })
+        this.updateExistingCard({ card, futureIndex: null })
       } else {
-        this.$store.commit('showError', 'One or more fields were not filled')
+        this.showError('One or more fields were not filled')
       }
     }
     this.closeDrawer()
