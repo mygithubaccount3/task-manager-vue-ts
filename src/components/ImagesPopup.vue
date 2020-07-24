@@ -16,6 +16,7 @@ import Component from 'vue-class-component'
 import { Ref } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { MutationMethod } from 'vuex'
+import apiService from '../services/api.service'
 
 @Component
 export default class ImagesPopup extends Vue {
@@ -24,12 +25,10 @@ export default class ImagesPopup extends Vue {
   @Ref() readonly spinner!: HTMLDivElement;
 
   imagesURLs: Array<string> = []
-  controller = new AbortController()
 
   mounted () {
     this.spinner.className = 'show'
-    fetch('https://api.magicthegathering.io/v1/cards', { signal: this.controller.signal })
-      .then(res => res.json())
+    apiService.fetchAllCards()
       .then(res => {
         res.cards.forEach((el: any) => {
           if (el.imageUrl) {
@@ -49,7 +48,6 @@ export default class ImagesPopup extends Vue {
   }
 
   closePopup () {
-    this.controller.abort()
     this.$emit('closePopup')
   }
 }
