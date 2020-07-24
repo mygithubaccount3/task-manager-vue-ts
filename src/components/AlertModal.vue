@@ -46,16 +46,7 @@ export default class AlertModal extends Vue {
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   font-family: Helvetica, Arial, sans-serif;
-  z-index: 1000;
-}
-
-.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
-}
-
-.modal-body {
-  margin: 20px 0;
+  z-index: 2000;
 }
 
 .modal-default-button {
